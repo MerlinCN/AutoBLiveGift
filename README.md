@@ -6,9 +6,9 @@
 
 _自动送礼物_
 
-<a href="https://pypi.org/project/WeiboBot/"><img alt="Python Version" src="https://img.shields.io/pypi/pyversions/WeiboBot" /></a>
-<a href="https://pypi.org/project/WeiboBot/"><img alt="Python Implementation" src="https://img.shields.io/pypi/implementation/WeiboBot" /></a>
-<a href="https://github.com/MerlinCN/WeiboBot/blob/master/LICENSE"><img alt="License" src="https://img.shields.io/github/license/MerlinCN/WeiboBot"></a>
+<img alt="Python Version" src="https://img.shields.io/pypi/pyversions/WeiboBot" /></a>
+<img alt="Python Implementation" src="https://img.shields.io/pypi/implementation/WeiboBot" /></a>
+<a href="http://192.168.6.120:3000/merlin/AutoBliveGift/src/branch/master/LICENSE"><img alt="License" src="https://img.shields.io/github/license/MerlinCN/WeiboBot"></a>
 
 </div>
 
@@ -35,7 +35,7 @@ _自动送礼物_
 1. **克隆仓库**
 
     ```bash
-    git clone https://github.com/merlincn/AutoBliveGift.git
+    git clone http://192.168.6.120:3000/merlin/AutoBliveGift.git
     ```
 
 2. **进入项目目录**
