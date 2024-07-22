@@ -5,7 +5,7 @@ from typing import List, Optional
 
 from bilibili_api import Credential
 from pydantic import BaseModel
-
+from config import ConfigObj
 
 class Cookie(BaseModel):
     expires: int
@@ -36,7 +36,7 @@ class CookiesData(BaseModel):
 
 def load_credential() -> Optional[Credential]:
     try:
-        with open('cookies.json', 'r') as f:
+        with open(ConfigObj.cookies_path, 'r') as f:
             data: CookiesData = CookiesData(**json.load(f))
     except FileNotFoundError:
         return None
@@ -55,8 +55,6 @@ def load_credential() -> Optional[Credential]:
             continue
     if not sessdata or not bili_jct or not dedeuserid:
         return None
-    global self_uid
-    self_uid = dedeuserid
     return Credential(sessdata=sessdata, bili_jct=bili_jct, buvid3="0EAE94CF-F55C-2A23-37CB-46686BE0626549996infoc",
                       dedeuserid=dedeuserid)
 

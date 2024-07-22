@@ -11,6 +11,7 @@ class Config(BaseModel):
     target_gift_id: int = Field(default=31036, description="要送的礼物ID（默认是小花花）")
     target_gift_num: int = Field(default=1, description="要送的礼物数量")
     delay: int = Field(default=60, description="送礼物延时（秒）")
+    cookies_path: str = Field(default='cookies.json', description="cookies文件路径，第一次运行会生成，一般无需修改")
     debug: bool = Field(default=False, description="是否开启调试模式")
 
 
@@ -61,3 +62,19 @@ def get_config() -> Optional[Config]:
     result = load_or_create_config()
     add_yaml_comments()
     return result
+
+
+ConfigObj = get_config()
+
+if not ConfigObj:
+    print('配置文件需要手动填写。请修改 config.yaml 文件。')
+    exit(1)
+else:
+    print('读取配置文件成功')
+    # 打印每个字段的名称和值以及描述
+    for field_name, field_info in ConfigObj.__fields__.items():
+        value = getattr(ConfigObj, field_name)
+        description = field_info.field_info.description
+        if isinstance(value, bool):
+            value = '是' if value else '否'
+        print(f"{description}: {value} ")

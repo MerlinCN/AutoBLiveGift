@@ -4,28 +4,13 @@ import os.path
 import platform
 from datetime import datetime
 
+from config import ConfigObj
 from bilibili_api import live, sync
 from pydantic import BaseModel
 
-from config import get_config
 from credential import get_credential
 
-config = get_config()
-
-if not config:
-    print('配置文件需要手动填写。请修改 config.yaml 文件。')
-    exit(1)
-else:
-    print('读取配置文件成功')
-    # 打印每个字段的名称和值以及描述
-    for field_name, field_info in config.__fields__.items():
-        value = getattr(config, field_name)
-        description = field_info.field_info.description
-        if isinstance(value, bool):
-            value = '是' if value else '否'
-        print(f"{description}: {value} ")
-
-logger = logging.getLogger(f"LiveDanmaku_{config.room_id}")
+logger = logging.getLogger(f"LiveDanmaku_{ConfigObj.room_id}")
 
 
 class Gift(BaseModel):
@@ -36,16 +21,16 @@ class Gift(BaseModel):
 
 
 CredentialObj = get_credential()
-RoomObj = live.LiveDanmaku(config.room_id, credential=CredentialObj)
-GiftObj = Gift(id=config.target_gift_id, num=config.target_gift_num)
-LiveRoomObj = live.LiveRoom(config.room_id, CredentialObj)
+RoomObj = live.LiveDanmaku(ConfigObj.room_id, credential=CredentialObj)
+GiftObj = Gift(id=ConfigObj.target_gift_id, num=ConfigObj.target_gift_num)
+LiveRoomObj = live.LiveRoom(ConfigObj.room_id, CredentialObj)
 
 
 @RoomObj.on("LIVE")
 async def on_live(event):
     logger.info(
-        f"直播间开播了，将在{config.delay}秒后送出{GiftObj.num}个{GiftObj.name}，价值{GiftObj.price * GiftObj.num / 1000}元")
-    await asyncio.sleep(config.delay)
+        f"直播间开播了，将在{ConfigObj.delay}秒后送出{GiftObj.num}个{GiftObj.name}，价值{GiftObj.price * GiftObj.num / 1000}元")
+    await asyncio.sleep(ConfigObj.delay)
     if has_executed_today():
         logger.info("今天已经送过礼物了")
         return
@@ -78,7 +63,7 @@ def has_executed_today() -> bool:
 
 
 async def load():
-    gift_config = await live.get_gift_config(room_id=config.room_id)
+    gift_config = await live.get_gift_config(room_id=ConfigObj.room_id)
     for idx, gift in enumerate(gift_config['list']):
         if gift['id'] == GiftObj.id:
             GiftObj.price = gift['price']
