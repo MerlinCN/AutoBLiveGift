@@ -1,9 +1,16 @@
 
 ---
+<div align="center">
 
-# 🎉 开播爆米🎉
+# 开播爆米
 
-用于哔哩哔哩开播就送礼物
+_自动送礼物_
+
+<a href="https://pypi.org/project/WeiboBot/"><img alt="Python Version" src="https://img.shields.io/pypi/pyversions/WeiboBot" /></a>
+<a href="https://pypi.org/project/WeiboBot/"><img alt="Python Implementation" src="https://img.shields.io/pypi/implementation/WeiboBot" /></a>
+<a href="https://github.com/MerlinCN/WeiboBot/blob/master/LICENSE"><img alt="License" src="https://img.shields.io/github/license/MerlinCN/WeiboBot"></a>
+
+</div>
 
 ## 目录 📚
 
