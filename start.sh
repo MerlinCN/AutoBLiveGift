@@ -1,17 +1,16 @@
 #!/bin/bash
+NAME="auto_blive_gift"
+LOG_FILE=$NAME".log"
+PID_FILE=$NAME".pid"
 #如果程序已经启动，那么先关闭
-if [ -f "auto_blive_gift.pid" ]; then
-    echo "程序已经启动，PID: $(cat auto_blive_gift.pid)，正在关闭..."
-    kill -9 $(cat auto_blive_gift.pid)
-    rm -f auto_blive_gift.pid
+if [ -f $PID_FILE ]; then
+    echo "程序已经启动，PID: $(cat $PID_FILE)，正在关闭..."
+    kill -9 $(cat $PID_FILE)
+    rm -f $PID_FILE
     echo "程序已关闭"
 fi
 
-LOG_FILE="auto_blive_gift.log"
-PID_FILE="auto_blive_gift.pid"
-
 # 进入目录
-
 
 # 启动程序，并将输出重定向到日志文件
 nohup python src/main.py --job-name auto_blive_gift > $LOG_FILE 2>&1 &
