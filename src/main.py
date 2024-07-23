@@ -4,10 +4,10 @@ import os.path
 import platform
 from datetime import datetime
 
-from config import ConfigObj
-from bilibili_api import live, sync
+from bilibili_api import live, sync, user
 from pydantic import BaseModel
 
+from config import ConfigObj
 from credential import get_credential
 
 logger = logging.getLogger(f"LiveDanmaku_{ConfigObj.room_id}")
@@ -71,11 +71,14 @@ async def load():
             logger.info(
                 f"找到{GiftObj.id}号礼物“{GiftObj.name}”，单价为{GiftObj.price // 100}电池 ，折合人民币{GiftObj.price / 1000}元")
             break
-    status = await LiveRoomObj.get_room_info()
-    logger.info(f"主播名称：{status['anchor_info']['base_info']['uname']}")
     if not GiftObj.price:
         logger.error(f"未找到礼物配置 {GiftObj.id}")
         exit(1)
+    account = user.User(CredentialObj.dedeuserid, CredentialObj)
+    user_info = await account.get_user_info()
+    logger.info(f"用户名称：{user_info['name']}")
+    status = await LiveRoomObj.get_room_info()
+    logger.info(f"主播名称：{status['anchor_info']['base_info']['uname']}")
 
 
 if __name__ == '__main__':

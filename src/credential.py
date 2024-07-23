@@ -71,4 +71,6 @@ def get_credential() -> Credential:
     if not credential:
         print('登录失败')
         exit(1)
+    if os.path.exists("qrcode.png"):
+        os.remove("qrcode.png")
     return credential
