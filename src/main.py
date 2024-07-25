@@ -4,7 +4,7 @@ import os.path
 import platform
 from datetime import datetime
 
-from bilibili_api import live, sync, user
+from bilibili_api import live, sync, user,Danmaku
 from pydantic import BaseModel
 
 from config import ConfigObj
@@ -30,6 +30,10 @@ LiveRoomObj = live.LiveRoom(ConfigObj.room_id, CredentialObj)
 async def on_live(event):
     logger.info(
         f"直播间开播了，将在{ConfigObj.delay}秒后送出{GiftObj.num}个{GiftObj.name}，价值{GiftObj.price * GiftObj.num / 1000}元")
+    try:
+        await LiveRoomObj.send_danmaku(Danmaku("嗨嗨嗨"))
+    except Exception as e:
+        logger.error(f"发送弹幕失败: {e}")
     await asyncio.sleep(ConfigObj.delay)
     if has_executed_today():
         logger.info("今天已经送过礼物了")
