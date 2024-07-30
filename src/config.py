@@ -14,6 +14,7 @@ class Config(BaseModel):
     cookies_path: str = Field(default='cookies.json', description="cookies文件路径，第一次运行会生成，一般无需修改")
     greeting: str = Field(default='嗨嗨嗨', description="直播间开播时发送的弹幕")
     bark_key: str = Field(default=None, description="Bark App的Key，用于推送消息")
+    bark_icon: str = Field(default=None, description="Bark App的Icon，用于推送消息")
     debug: bool = Field(default=False, description="是否开启调试模式")
 
 

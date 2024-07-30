@@ -27,6 +27,16 @@ GiftObj = Gift(id=ConfigObj.target_gift_id, num=ConfigObj.target_gift_num)
 LiveRoomObj = live.LiveRoom(ConfigObj.room_id, CredentialObj)
 
 
+async def bark(message: str):
+    if not ConfigObj.bark_key:
+        return
+    async with httpx.AsyncClient() as client:
+        data = {
+            "icon": ConfigObj.bark_icon,
+        }
+        await client.get(f"https://api.day.app/{ConfigObj.bark_key}/{message}", params=data)
+
+
 @RoomObj.on("LIVE")
 async def on_live(event):
     if has_executed_today():
@@ -47,8 +57,8 @@ async def on_live(event):
         return
     set_last_execution_date()
     logger.info(f"送礼物成功: {result}")
-    async with httpx.AsyncClient() as client:
-        await client.get(f"https://api.day.app/{ConfigObj.bark_key}/送礼物成功")
+    await bark("送礼物成功")
+
 
 def get_last_execution_date() -> str:
     if os.path.exists('last_execution.txt'):
@@ -85,6 +95,7 @@ async def load():
     logger.info(f"用户名称：{user_info['name']}")
     status = await LiveRoomObj.get_room_info()
     logger.info(f"主播名称：{status['anchor_info']['base_info']['uname']}")
+    await bark("启动成功")
 
 
 if __name__ == '__main__':
