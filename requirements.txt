@@ -1,3 +1,4 @@
 pydantic
 ruamel.yaml
 bilibili-api-python
+httpx

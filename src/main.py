@@ -4,7 +4,8 @@ import os.path
 import platform
 from datetime import datetime
 
-from bilibili_api import live, sync, user,Danmaku
+import httpx
+from bilibili_api import live, sync, user, Danmaku
 from pydantic import BaseModel
 
 from config import ConfigObj
@@ -28,16 +29,16 @@ LiveRoomObj = live.LiveRoom(ConfigObj.room_id, CredentialObj)
 
 @RoomObj.on("LIVE")
 async def on_live(event):
-    logger.info(
-        f"直播间开播了，将在{ConfigObj.delay}秒后送出{GiftObj.num}个{GiftObj.name}，价值{GiftObj.price * GiftObj.num / 1000}元")
-    try:
-        await LiveRoomObj.send_danmaku(Danmaku("嗨嗨嗨"))
-    except Exception as e:
-        logger.error(f"发送弹幕失败: {e}")
-    await asyncio.sleep(ConfigObj.delay)
     if has_executed_today():
         logger.info("今天已经送过礼物了")
         return
+    logger.info(
+        f"直播间开播了，将在{ConfigObj.delay}秒后送出{GiftObj.num}个{GiftObj.name}，价值{GiftObj.price * GiftObj.num / 1000}元")
+    try:
+        await LiveRoomObj.send_danmaku(Danmaku(ConfigObj.greeting))
+    except Exception as e:
+        logger.error(f"发送弹幕失败: {e}")
+    await asyncio.sleep(ConfigObj.delay)
     try:
         result = await LiveRoomObj.send_gift_gold(uid=CredentialObj.dedeuserid, gift_id=GiftObj.id,
                                                   gift_num=GiftObj.num, price=GiftObj.price)
@@ -46,7 +47,8 @@ async def on_live(event):
         return
     set_last_execution_date()
     logger.info(f"送礼物成功: {result}")
-
+    async with httpx.AsyncClient() as client:
+        await client.get(f"https://api.day.app/{ConfigObj.bark_key}/送礼物成功")
 
 def get_last_execution_date() -> str:
     if os.path.exists('last_execution.txt'):
