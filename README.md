@@ -1,4 +1,3 @@
-
 ---
 <div align="center">
 
@@ -8,7 +7,7 @@ _自动送礼物_
 
 <img alt="Python Version" src="https://img.shields.io/pypi/pyversions/WeiboBot" /></a>
 <img alt="Python Implementation" src="https://img.shields.io/pypi/implementation/WeiboBot" /></a>
-<a href="http://192.168.6.120:3000/merlin/AutoBliveGift/src/branch/master/LICENSE"><img alt="License" src="https://img.shields.io/github/license/MerlinCN/WeiboBot"></a>
+<a href="http://github.com/MerlinCN/AutoBliveGift/src/branch/master/LICENSE"><img alt="License" src="https://img.shields.io/github/license/MerlinCN/WeiboBot"></a>
 
 </div>
 
@@ -35,7 +34,7 @@ _自动送礼物_
 1. **克隆仓库**
 
     ```bash
-    git clone http://192.168.6.120:3000/merlin/AutoBliveGift.git
+    git clone http://github.com/MerlinCN/AutoBliveGift.git
     ```
 
 2. **进入项目目录**
@@ -44,28 +43,49 @@ _自动送礼物_
     cd AutoBliveGift
     ```
 
-3. **创建虚拟环境（推荐）**
+3. **安装依赖**
 
     ```bash
-    python -m venv venv
-    source venv/bin/activate  # 在 Windows 上使用 `venv\Scripts\activate`
-    ```
-
-4. **安装依赖**
-
-    ```bash
-    pip install -r requirements.txt
+    pip install uv 
+    uv sync
+    uv venv
     ```
 
 ## 运行程序 
 
+### 方式一：源码启动
+
 在安装完依赖后，您可以运行主程序：
 
 ```bash
-python src/main.py
+uv run src/main.py
 ```
 
 程序应当会启动并在终端中输出结果。
+
+### 方式二：Docker Compose 启动
+
+1. **确保已安装 Docker 和 Docker Compose**
+
+    如果尚未安装，请参考 [Docker 官方文档](https://docs.docker.com/get-docker/) 进行安装。
+
+2. **使用 Docker Compose 启动**
+
+    ```bash
+    docker compose up -d
+    ```
+
+    这将以后台模式启动服务。如果需要查看日志，可以使用：
+
+    ```bash
+    docker compose logs -f
+    ```
+
+3. **停止服务**
+
+    ```bash
+    docker compose down
+    ```
 
 ## 常见问题
 

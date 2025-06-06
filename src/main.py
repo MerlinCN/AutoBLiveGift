@@ -1,15 +1,15 @@
 import asyncio
 import logging
-import os.path
 import platform
 from datetime import datetime
 
 import httpx
-from bilibili_api import live, sync, user, Danmaku
+from bilibili_api import live, user, Danmaku
 from pydantic import BaseModel
 
 from config import ConfigObj
 from credential import get_credential
+from data import get_date_flag, init_db, set_date_flag
 
 logger = logging.getLogger(f"LiveDanmaku_{ConfigObj.room_id}")
 
@@ -60,22 +60,14 @@ async def on_live(event):
     await bark("送礼物成功")
 
 
-def get_last_execution_date() -> str:
-    if os.path.exists('last_execution.txt'):
-        with open('last_execution.txt', 'r') as file:
-            return file.read().strip()
-    return ''
+
+async def set_last_execution_date():
+    await set_date_flag(datetime.now().strftime('%Y-%m-%d'))
 
 
-def set_last_execution_date() -> None:
-    with open('last_execution.txt', 'w') as file:
-        file.write(datetime.now().strftime('%Y-%m-%d'))
-
-
-def has_executed_today() -> bool:
-    last_execution_date = get_last_execution_date()
+async def has_executed_today() -> bool:
     today = datetime.now().strftime('%Y-%m-%d')
-    return last_execution_date == today
+    return await get_date_flag(today)
 
 
 async def load():
@@ -98,8 +90,12 @@ async def load():
     await bark("启动成功")
 
 
+async def main():
+    await init_db()
+    await load()
+    await RoomObj.connect()
+
 if __name__ == '__main__':
     if platform.system() == 'Windows':
         asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
-    sync(load())
-    sync(RoomObj.connect())
+    asyncio.run(main())

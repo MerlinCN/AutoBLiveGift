@@ -1,0 +1,12 @@
+services:
+  autoblivegift:
+    build:
+      context: .
+      dockerfile: Dockerfile 
+    container_name: autoblivegift
+    volumes:
+      - ./data.db:/app/data.db
+      - ./cookies.json:/app/cookies.json
+      - ./config.yaml:/app/config.yaml
+      - ./src:/app/src
+    restart: unless-stopped

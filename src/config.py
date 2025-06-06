@@ -26,7 +26,7 @@ def load_or_create_config() -> Optional[Config]:
     if not os.path.exists(CONFIG_FILE_PATH):
         config = Config()
         with open(CONFIG_FILE_PATH, 'w', encoding='utf8') as f:
-            yaml.dump(config.dict(), f)
+            yaml.dump(config.model_dump(), f)
         return
 
     with open(CONFIG_FILE_PATH, 'r', encoding='utf8') as f:
@@ -36,8 +36,8 @@ def load_or_create_config() -> Optional[Config]:
     updated = False
 
     # 添加缺失的字段并更新注释
-    new_config_data = config.dict()
-    for key, value in Config().dict().items():
+    new_config_data = config.model_dump()
+    for key, value in Config().model_dump().items():
         if key not in config_data:
             new_config_data[key] = value
             updated = True
@@ -53,9 +53,9 @@ def add_yaml_comments():
     with open(CONFIG_FILE_PATH, 'r', encoding='utf8') as f:
         config_data = yaml.load(f)
 
-    for field in Config.__fields__.values():
-        if field.field_info.description:
-            config_data.yaml_add_eol_comment(field.field_info.description, field.name)
+    for field_name, field in Config.model_fields.items():
+        if field.description:
+            config_data.yaml_add_eol_comment(field.description, field_name)
 
     with open(CONFIG_FILE_PATH, 'w', encoding='utf8') as f:
         yaml.dump(config_data, f)
@@ -75,9 +75,9 @@ if not ConfigObj:
 else:
     print('读取配置文件成功')
     # 打印每个字段的名称和值以及描述
-    for field_name, field_info in ConfigObj.__fields__.items():
+    for field_name, field_info in Config.model_fields.items():
         value = getattr(ConfigObj, field_name)
-        description = field_info.field_info.description
+        description = field_info.description
         if isinstance(value, bool):
             value = '是' if value else '否'
         print(f"{description}: {value} ")

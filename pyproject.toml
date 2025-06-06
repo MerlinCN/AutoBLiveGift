@@ -1,0 +1,12 @@
+[project]
+name = "autoblivegift"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "aiohttp>=3.12.9",
+    "bilibili-api-python>=17.2.1",
+    "httpx>=0.28.1",
+    "pydantic>=2.11.5",
+    "ruamel-yaml>=0.18.12",
+    "tortoise-orm[aiosqlite]>=0.25.1",
+]

@@ -59,8 +59,13 @@ def load_credential() -> Optional[Credential]:
                       dedeuserid=dedeuserid)
 
 
-def get_credential() -> Credential:
-    credential = load_credential()
+
+
+def get_credential(refresh: bool = False) -> Credential:
+    if not refresh:
+        credential = load_credential()
+    else:
+        credential = None
     biliup_cmd = "bin/biliup login"
     if platform.system() == 'Windows':
         biliup_cmd = r"bin\biliup.exe login"
