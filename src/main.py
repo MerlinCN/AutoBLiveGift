@@ -42,7 +42,7 @@ async def on_live(event):
     logger.info(
         f"直播间开播了，将在{ConfigObj.delay}秒后送出{GiftObj.num}个{GiftObj.name}，价值{GiftObj.price * GiftObj.num / 1000}元")
     await asyncio.sleep(ConfigObj.delay)
-    if has_executed_today():
+    if await has_executed_today():
         logger.info("今天已经送过礼物了")
         return
     try:
@@ -55,7 +55,7 @@ async def on_live(event):
     except Exception as e:
         logger.error(f"送礼物失败: {e}")
         return
-    set_last_execution_date()
+    await set_last_execution_date()
     logger.info(f"送礼物成功: {result}")
     await bark("送礼物成功")
 
