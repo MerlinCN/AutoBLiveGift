@@ -13,6 +13,9 @@ from data import get_date_flag, init_db, set_date_flag
 
 logger = logging.getLogger(f"LiveDanmaku_{ConfigObj.room_id}")
 
+# 添加全局锁
+gift_lock = asyncio.Lock()
+
 
 class Gift(BaseModel):
     id: int
@@ -41,23 +44,26 @@ async def bark(message: str):
 async def on_live(event):
     logger.info(
         f"直播间开播了，将在{ConfigObj.delay}秒后送出{GiftObj.num}个{GiftObj.name}，价值{GiftObj.price * GiftObj.num / 1000}元")
-    await asyncio.sleep(ConfigObj.delay)
-    if await has_executed_today():
-        logger.info("今天已经送过礼物了")
-        return
-    try:
-        await LiveRoomObj.send_danmaku(Danmaku(ConfigObj.greeting))
-    except Exception as e:
-        logger.error(f"发送弹幕失败: {e}")
-    try:
-        result = await LiveRoomObj.send_gift_gold(uid=CredentialObj.dedeuserid, gift_id=GiftObj.id,
-                                                  gift_num=GiftObj.num, price=GiftObj.price)
-    except Exception as e:
-        logger.error(f"送礼物失败: {e}")
-        return
-    await set_last_execution_date()
-    logger.info(f"送礼物成功: {result}")
-    await bark("送礼物成功")
+    
+    # 在sleep之前就获取锁
+    async with gift_lock:
+        await asyncio.sleep(ConfigObj.delay)
+        if await has_executed_today():
+            logger.info("今天已经送过礼物了")
+            return
+        try:
+            await LiveRoomObj.send_danmaku(Danmaku(ConfigObj.greeting))
+        except Exception as e:
+            logger.error(f"发送弹幕失败: {e}")
+        try:
+            result = await LiveRoomObj.send_gift_gold(uid=CredentialObj.dedeuserid, gift_id=GiftObj.id,
+                                                      gift_num=GiftObj.num, price=GiftObj.price)
+        except Exception as e:
+            logger.error(f"送礼物失败: {e}")
+            return
+        await set_last_execution_date()
+        logger.info(f"送礼物成功: {result}")
+        await bark("送礼物成功")
 
 
 
@@ -76,8 +82,7 @@ async def load():
         if gift['id'] == GiftObj.id:
             GiftObj.price = gift['price']
             GiftObj.name = gift['name']
-            logger.info(
-                f"找到{GiftObj.id}号礼物“{GiftObj.name}”，单价为{GiftObj.price // 100}电池 ，折合人民币{GiftObj.price / 1000}元")
+            logger.info(f"找到{GiftObj.id}号礼物{GiftObj.name}，单价为{GiftObj.price // 100}电池 ，折合人民币{GiftObj.price / 1000}元")
             break
     if not GiftObj.price:
         logger.error(f"未找到礼物配置 {GiftObj.id}")
