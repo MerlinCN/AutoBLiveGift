@@ -10,9 +10,5 @@ services:
       - ./config.yaml:/app/config.yaml
       - ./src:/app/src
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
+    ports:
+      - 21554:8000
