@@ -1,4 +1,5 @@
 import asyncio
+import os
 from datetime import datetime
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
@@ -18,6 +19,7 @@ async def lifespan(app: FastAPI):
     await init_db()
     await load()
     asyncio.create_task(RoomObj.connect())
+    asyncio.create_task(health())
     yield
     # 关闭时执行（如果需要清理资源）
 
@@ -113,11 +115,12 @@ async def load():
     await bark("启动成功")
 
 
-@app.get("/health")
 async def health():
-    status = RoomObj.get_status()
-    if status == live.LiveDanmaku.STATUS_CLOSED:
-        raise HTTPException(status_code=500, detail="直播间已关闭")
-    return {"code": 0, "msg": "success"}
+    while True:
+        await asyncio.sleep(10)
+        status = RoomObj.get_status()
+        if status == live.LiveDanmaku.STATUS_CLOSED:
+            logger.error("直播间已关闭")
+            os._exit(1)
 
 

@@ -5,16 +5,10 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 # 设置工作目录
 WORKDIR /app
 ENV TZ=Asia/Shanghai
-
 COPY . .
 RUN uv sync
 
 RUN uv venv
 
-EXPOSE 8000
-
-HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
-  CMD curl -f http://localhost:8000/health || exit 1
-
 # 运行项目
-CMD ["uv", "run", "-m", "uvicorn","src.main:app","--host","0.0.0.0","--port","8000"]
+CMD ["uv", "run", "-m", "uvicorn","src.main:app"]

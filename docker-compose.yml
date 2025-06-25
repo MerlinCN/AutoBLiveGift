@@ -10,5 +10,3 @@ services:
       - ./config.yaml:/app/config.yaml
       - ./src:/app/src
     restart: unless-stopped
-    ports:
-      - 21554:8000
