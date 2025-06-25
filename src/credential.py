@@ -5,7 +5,7 @@ from typing import List, Optional
 
 from bilibili_api import Credential
 from pydantic import BaseModel
-from config import ConfigObj
+from .config import ConfigObj
 
 class Cookie(BaseModel):
     expires: int

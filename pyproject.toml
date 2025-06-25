@@ -3,10 +3,13 @@ name = "autoblivegift"
 version = "0.1.0"
 requires-python = ">=3.11"
 dependencies = [
-    "aiohttp>=3.12.9",
+    "aiohttp>=3.12.13",
     "bilibili-api-python>=17.2.1",
+    "fastapi>=0.115.13",
     "httpx>=0.28.1",
+    "loguru>=0.7.3",
     "pydantic>=2.11.5",
     "ruamel-yaml>=0.18.12",
-    "tortoise-orm[aiosqlite]>=0.25.1",
+    "tortoise-orm>=0.25.1",
+    "uvicorn>=0.34.3",
 ]

@@ -12,4 +12,7 @@ RUN uv sync
 RUN uv venv
 
 # 运行项目
-CMD ["uv", "run", "src/main.py"]
+CMD ["uv", "run", "-m", "src.main:app"]
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+  CMD curl -f http://localhost:8000/health || exit 1

@@ -1,17 +1,27 @@
 import asyncio
-import logging
-import platform
 from datetime import datetime
+from contextlib import asynccontextmanager
+from fastapi import FastAPI, HTTPException
 
 import httpx
 from bilibili_api import live, user, Danmaku
 from pydantic import BaseModel
 
-from config import ConfigObj
-from credential import get_credential
-from data import get_date_flag, init_db, set_date_flag
+from .config import ConfigObj
+from .credential import get_credential
+from .data import get_date_flag, init_db, set_date_flag
+from loguru import logger
 
-logger = logging.getLogger(f"LiveDanmaku_{ConfigObj.room_id}")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # 启动时执行
+    await init_db()
+    await load()
+    await RoomObj.connect()
+    yield
+    # 关闭时执行（如果需要清理资源）
+
+app = FastAPI(lifespan=lifespan)
 
 # 添加全局锁
 gift_lock = asyncio.Lock()
@@ -45,12 +55,20 @@ async def on_live(event):
     logger.info(
         f"直播间开播了，将在{ConfigObj.delay}秒后送出{GiftObj.num}个{GiftObj.name}，价值{GiftObj.price * GiftObj.num / 1000}元")
     
-    # 在sleep之前就获取锁
+    # 先检查今天是否已经执行过
+    if await has_executed_today():
+        logger.info("今天已经送过礼物了")
+        return
+    
+    # 等待延迟时间
+    await asyncio.sleep(ConfigObj.delay)
+    
+    # 再次检查（防止在等待期间其他协程已经执行）
     async with gift_lock:
-        await asyncio.sleep(ConfigObj.delay)
         if await has_executed_today():
             logger.info("今天已经送过礼物了")
             return
+        
         try:
             await LiveRoomObj.send_danmaku(Danmaku(ConfigObj.greeting))
         except Exception as e:
@@ -95,12 +113,11 @@ async def load():
     await bark("启动成功")
 
 
-async def main():
-    await init_db()
-    await load()
-    await RoomObj.connect()
+@app.get("/health")
+async def health():
+    status = await RoomObj.get_status()
+    if status == live.STATUS_CLOSED:
+        raise HTTPException(status_code=500, detail="直播间已关闭")
+    return {"code": 0, "msg": "success"}
 
-if __name__ == '__main__':
-    if platform.system() == 'Windows':
-        asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
-    asyncio.run(main())
+
