@@ -17,7 +17,7 @@ async def lifespan(app: FastAPI):
     # 启动时执行
     await init_db()
     await load()
-    await RoomObj.connect()
+    asyncio.create_task(RoomObj.connect())
     yield
     # 关闭时执行（如果需要清理资源）
 
@@ -115,8 +115,8 @@ async def load():
 
 @app.get("/health")
 async def health():
-    status = await RoomObj.get_status()
-    if status == live.STATUS_CLOSED:
+    status = RoomObj.get_status()
+    if status == live.LiveDanmaku.STATUS_CLOSED:
         raise HTTPException(status_code=500, detail="直播间已关闭")
     return {"code": 0, "msg": "success"}
 
