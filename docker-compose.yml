@@ -5,8 +5,7 @@ services:
       dockerfile: Dockerfile 
     container_name: autoblivegift
     volumes:
-      - ./data.db:/app/data.db
-      - ./cookies.json:/app/cookies.json
-      - ./config.yaml:/app/config.yaml
+      - ./data/data.db:/app/data/data.db
+      - ./config.toml:/app/config.toml
       - ./src:/app/src
     restart: unless-stopped

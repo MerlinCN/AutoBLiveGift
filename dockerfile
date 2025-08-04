@@ -6,9 +6,12 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 WORKDIR /app
 ENV TZ=Asia/Shanghai
 COPY . .
-RUN uv sync
 
 RUN uv venv
+
+RUN uv sync
+
+
 
 # 运行项目
 CMD ["uv", "run", "-m", "uvicorn","src.main:app"]

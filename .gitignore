@@ -168,3 +168,4 @@ data/
 *.png
 
 data.db*
+config.toml
