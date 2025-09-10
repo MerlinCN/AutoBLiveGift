@@ -82,7 +82,7 @@ async def on_live(event):
             logger.error(f"发送弹幕失败: {e}")
         try:
             result = await LiveRoomObj.send_gift_gold(
-                uid=setting.dedeuserid,
+                uid=CredentialObj.dedeuserid,
                 gift_id=GiftObj.id,
                 gift_num=GiftObj.num,
                 price=GiftObj.price,

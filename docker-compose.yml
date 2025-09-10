@@ -8,4 +8,5 @@ services:
       - ./data/data.db:/app/data/data.db
       - ./config.toml:/app/config.toml
       - ./src:/app/src
+      - /home/merlin/FlashBot2/cache/nonebot_plugin_bilichat/bili_grpc_auth.json:/app/cookies.json
     restart: unless-stopped
